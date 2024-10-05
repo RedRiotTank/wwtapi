@@ -9,6 +9,6 @@ import jakarta.persistence.Id
 data class Item(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Int,
-    val itemId: String,
+    var id: Int,
+    var itemId: String
 )
