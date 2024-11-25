@@ -28,10 +28,12 @@ class ItemService(
             )
             throw IllegalArgumentException("Invalid Minecraft item ID")
 
-        val item :Item = modelMapper.map(itemInDto, Item::class.java)
-        itemRepository.save(item)
+        val existingItem = itemRepository.findByItemId(itemInDto.itemId)
 
-        return item
+        return existingItem ?: run {
+            val newItem = modelMapper.map(itemInDto, Item::class.java)
+            itemRepository.save(newItem)
+        }
     }
 
     fun deleteItem(id: Int) {

@@ -1,7 +1,6 @@
 package wwt.api.service
 
 import exception.ResourceNotFoundExcepcion
-import okhttp3.OkHttpClient
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

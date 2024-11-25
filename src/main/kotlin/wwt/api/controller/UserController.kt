@@ -35,14 +35,35 @@ class UserController(
     )
     @GetMapping("/getUserById")
     fun getUserById(
-        @Parameter(description = "The id of the player to be found", example = "---")
-        @RequestParam playerUuid: UUID,
-        @Parameter(description = "The id of the server to be found", example = "---")
-        @RequestParam serverUuid: UUID
+        @Parameter(description = "The id of the user to be retrieved", example = "1")
+        @RequestParam id: Int
     ) : ResponseEntity<User> {
-        val user = userService.getUserById(playerUuid, serverUuid)
+        val user = userService.getUserById(id)
         return ResponseEntity.ok(user)
     }
+    @Operation(
+        summary = "Get a user by player UUID and server UUID",
+        description = "Get a user by a given player UUID and server UUID"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "User found"),
+            ApiResponse(responseCode = "404", description = "User not found")
+        ]
+    )
+    @GetMapping("/getUserByPlayerUUIDAndServerUUID")
+    fun getUserByPlayerUUIDAndServerUUID(
+        @Parameter(description = "The player UUID of the user to be retrieved", example = "550e8400-e29b-41d4-a716-446655440000")
+        @RequestParam playerUUID: UUID,
+        @Parameter(description = "The server UUID of the user to be retrieved", example = "123e4567-e89b-12d3-a456-426614174000")
+        @RequestParam serverUUID: UUID
+    ) : ResponseEntity<User> {
+        val user = userService.getUserByPlayerUUIDAndServerUUID(playerUUID, serverUUID)
+        return ResponseEntity.ok(user)
+    }
+
+
+
     @Operation(
         summary = "Create a user",
         description = "Create a user with the given data"
@@ -65,7 +86,7 @@ class UserController(
         )
         @RequestBody userInDto: UserInDto
     ) : ResponseEntity<User> {
-        val user = userService.createUser(userInDto.playerUuid, userInDto.serverUuid)
+        val user = userService.createUser(userInDto)
         return ResponseEntity.ok(user)
     }
 
@@ -81,12 +102,10 @@ class UserController(
     )
     @DeleteMapping("/deleteUser")
     fun deleteUser(
-        @Parameter(description = "The id of the user to be deleted", example = "550e8400-e29b-41d4-a716-446655440000")
-        @RequestParam playerUuid: UUID,
-        @Parameter(description = "The id of the server to be deleted", example = "123e4567-e89b-12d3-a456-426614174000")
-        @RequestParam serverUuid: UUID
+        @Parameter(description = "The id of the user to be retrieved", example = "1")
+        @RequestParam id: Int
     ) : ResponseEntity<Unit> {
-        userService.deleteUser(playerUuid, serverUuid)
+        userService.deleteUser(id)
         return ResponseEntity.noContent().build()
     }
 }
