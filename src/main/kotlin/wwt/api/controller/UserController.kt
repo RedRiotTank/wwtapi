@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 import wwt.api.dto.UserInDto
 import wwt.api.entity.User
 import wwt.api.service.UserService
+import wwt.api.utils.logger
 import java.util.UUID
 
 @RestController
@@ -22,6 +23,8 @@ import java.util.UUID
 class UserController(
     private val userService: UserService
 ) {
+
+    private val logger = logger()
 
     @Operation(
         summary = "Get a user by id",
@@ -38,7 +41,12 @@ class UserController(
         @Parameter(description = "The id of the user to be retrieved", example = "1")
         @RequestParam id: Int
     ) : ResponseEntity<User> {
+        logger.info("Getting user by id: $id")
+
         val user = userService.getUserById(id)
+
+        logger.info("Returning user: $user")
+
         return ResponseEntity.ok(user)
     }
     @Operation(
