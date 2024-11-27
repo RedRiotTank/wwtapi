@@ -10,15 +10,21 @@ import wwt.api.entity.Item
 import org.springframework.stereotype.Service
 import wwt.api.dto.ItemInDto
 import wwt.api.repository.ItemRepository
+import wwt.api.utils.logger
 
 @Service
 class ItemService(
     private val itemRepository: ItemRepository,
     private val modelMapper: ModelMapper
 ) {
+
+    private val logger = logger()
+
         fun getItemById(id : Int): Item {
             return itemRepository.findById(id)
-                .orElseThrow() { ResourceNotFoundExcepcion("item", id) }
+                .orElseThrow {
+                    logger.error("Item $id not found")
+                    ResourceNotFoundExcepcion("item", id) }
         }
 
     fun createItem(itemInDto: ItemInDto): Item {
@@ -38,6 +44,7 @@ class ItemService(
 
     fun deleteItem(id: Int) {
         if (!itemRepository.existsById(id)) {
+            logger.error("Item $id not found")
             throw ResourceNotFoundExcepcion("item", id)
         }
 

@@ -41,12 +41,10 @@ class UserController(
         @Parameter(description = "The id of the user to be retrieved", example = "1")
         @RequestParam id: Int
     ) : ResponseEntity<User> {
-        logger.info("Getting user by id: $id")
-
+        logger.info("Requested user by id: $id")
         val user = userService.getUserById(id)
 
-        logger.info("Returning user: $user")
-
+        logger.info("User found: $user")
         return ResponseEntity.ok(user)
     }
     @Operation(
@@ -66,11 +64,12 @@ class UserController(
         @Parameter(description = "The server UUID of the user to be retrieved", example = "123e4567-e89b-12d3-a456-426614174000")
         @RequestParam serverUUID: UUID
     ) : ResponseEntity<User> {
+        logger.info("Requested user by player UUID: $playerUUID and server UUID: $serverUUID")
         val user = userService.getUserByPlayerUUIDAndServerUUID(playerUUID, serverUUID)
+
+        logger.info("User found: $user")
         return ResponseEntity.ok(user)
     }
-
-
 
     @Operation(
         summary = "Create a user",
@@ -94,7 +93,10 @@ class UserController(
         )
         @RequestBody userInDto: UserInDto
     ) : ResponseEntity<User> {
+        logger.info("Requested create user with data: $userInDto")
         val user = userService.createUser(userInDto)
+
+        logger.info("User created: $user")
         return ResponseEntity.ok(user)
     }
 
@@ -113,7 +115,10 @@ class UserController(
         @Parameter(description = "The id of the user to be retrieved", example = "1")
         @RequestParam id: Int
     ) : ResponseEntity<Unit> {
+        logger.info("Requested delete user by id: $id")
         userService.deleteUser(id)
+
+        logger.info("User deleted: $id")
         return ResponseEntity.noContent().build()
     }
 }
