@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 import wwt.api.dto.UserInDto
 import wwt.api.entity.User
 import wwt.api.service.UserService
+import wwt.api.utils.logger
 import java.util.UUID
 
 @RestController
@@ -22,6 +23,8 @@ import java.util.UUID
 class UserController(
     private val userService: UserService
 ) {
+
+    private val logger = logger()
 
     @Operation(
         summary = "Get a user by id",
@@ -35,14 +38,39 @@ class UserController(
     )
     @GetMapping("/getUserById")
     fun getUserById(
-        @Parameter(description = "The id of the player to be found", example = "---")
-        @RequestParam playerUuid: UUID,
-        @Parameter(description = "The id of the server to be found", example = "---")
-        @RequestParam serverUuid: UUID
+        @Parameter(description = "The id of the user to be retrieved", example = "1")
+        @RequestParam id: Int
     ) : ResponseEntity<User> {
-        val user = userService.getUserById(playerUuid, serverUuid)
+        logger.info("Requested user by id: $id")
+        val user = userService.getUserById(id)
+
+        logger.info("User found: $user")
         return ResponseEntity.ok(user)
     }
+    @Operation(
+        summary = "Get a user by player UUID and server UUID",
+        description = "Get a user by a given player UUID and server UUID"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "User found"),
+            ApiResponse(responseCode = "404", description = "User not found")
+        ]
+    )
+    @GetMapping("/getUserByPlayerUUIDAndServerUUID")
+    fun getUserByPlayerUUIDAndServerUUID(
+        @Parameter(description = "The player UUID of the user to be retrieved", example = "550e8400-e29b-41d4-a716-446655440000")
+        @RequestParam playerUUID: UUID,
+        @Parameter(description = "The server UUID of the user to be retrieved", example = "123e4567-e89b-12d3-a456-426614174000")
+        @RequestParam serverUUID: UUID
+    ) : ResponseEntity<User> {
+        logger.info("Requested user by player UUID: $playerUUID and server UUID: $serverUUID")
+        val user = userService.getUserByPlayerUUIDAndServerUUID(playerUUID, serverUUID)
+
+        logger.info("User found: $user")
+        return ResponseEntity.ok(user)
+    }
+
     @Operation(
         summary = "Create a user",
         description = "Create a user with the given data"
@@ -65,7 +93,10 @@ class UserController(
         )
         @RequestBody userInDto: UserInDto
     ) : ResponseEntity<User> {
-        val user = userService.createUser(userInDto.playerUuid, userInDto.serverUuid)
+        logger.info("Requested create user with data: $userInDto")
+        val user = userService.createUser(userInDto)
+
+        logger.info("User created: $user")
         return ResponseEntity.ok(user)
     }
 
@@ -81,12 +112,13 @@ class UserController(
     )
     @DeleteMapping("/deleteUser")
     fun deleteUser(
-        @Parameter(description = "The id of the user to be deleted", example = "550e8400-e29b-41d4-a716-446655440000")
-        @RequestParam playerUuid: UUID,
-        @Parameter(description = "The id of the server to be deleted", example = "123e4567-e89b-12d3-a456-426614174000")
-        @RequestParam serverUuid: UUID
+        @Parameter(description = "The id of the user to be retrieved", example = "1")
+        @RequestParam id: Int
     ) : ResponseEntity<Unit> {
-        userService.deleteUser(playerUuid, serverUuid)
+        logger.info("Requested delete user by id: $id")
+        userService.deleteUser(id)
+
+        logger.info("User deleted: $id")
         return ResponseEntity.noContent().build()
     }
 }

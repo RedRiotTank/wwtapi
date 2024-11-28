@@ -1,11 +1,9 @@
 package wwt.api.repository
 
-import wwt.api.entity.Item
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import java.util.Optional
+import wwt.api.entity.Offer
 
 @Repository
-interface ItemRepository : JpaRepository<Item, Int> {
-    fun findByItemId(itemId: String): Item?
+interface OfferRepository : JpaRepository<Offer, Int> {
 }

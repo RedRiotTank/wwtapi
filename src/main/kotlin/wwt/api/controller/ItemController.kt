@@ -21,12 +21,14 @@ import org.springframework.web.bind.annotation.RestController
 import wwt.api.dto.ItemInDto
 import wwt.api.entity.Item
 import wwt.api.service.ItemService
+import wwt.api.utils.logger
 
 @RestController
 @RequestMapping("/wwtapi/items")
 class ItemController(
     private val itemService: ItemService
 ) {
+    private val logger = logger()
 
     @Operation(
         summary = "Get an item by id",
@@ -45,7 +47,10 @@ class ItemController(
         @Parameter(description = "The id of the item to be found", example = "1")
         @RequestParam id : Int
     ): ResponseEntity<Item> {
+        logger.info("Requested item by id: $id")
         val item = itemService.getItemById(id)
+
+        logger.info("Item found: $item")
         return ResponseEntity.ok(item)
     }
 
@@ -64,7 +69,10 @@ class ItemController(
         @Parameter(description = "The data of the item to be created")
         @RequestBody itemInDto: ItemInDto
     ): ResponseEntity<Item> {
+        logger.info("Requested creating item: $itemInDto")
         val createdItem = itemService.createItem(itemInDto)
+
+        logger.info("Item created: $createdItem")
         return ResponseEntity.ok(createdItem)
     }
 
@@ -84,7 +92,10 @@ class ItemController(
         @Parameter(description = "The id of the item to be deleted", example = "1")
         @RequestParam id: Int
     ): ResponseEntity<Unit> {
+        logger.info("Requested delete item by id: $id")
         itemService.deleteItem(id)
+
+        logger.info("Item deleted: $id")
         return ResponseEntity.noContent().build()
     }
 
