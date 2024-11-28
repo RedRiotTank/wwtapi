@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 import wwt.api.dto.UserInDto
 import wwt.api.entity.User
 import wwt.api.service.UserService
+import wwt.api.utils.logger
 import java.util.UUID
 
 @RestController
@@ -22,6 +23,8 @@ import java.util.UUID
 class UserController(
     private val userService: UserService
 ) {
+
+    private val logger = logger()
 
     @Operation(
         summary = "Get a user by id",
@@ -38,7 +41,10 @@ class UserController(
         @Parameter(description = "The id of the user to be retrieved", example = "1")
         @RequestParam id: Int
     ) : ResponseEntity<User> {
+        logger.info("Requested user by id: $id")
         val user = userService.getUserById(id)
+
+        logger.info("User found: $user")
         return ResponseEntity.ok(user)
     }
     @Operation(
@@ -58,11 +64,12 @@ class UserController(
         @Parameter(description = "The server UUID of the user to be retrieved", example = "123e4567-e89b-12d3-a456-426614174000")
         @RequestParam serverUUID: UUID
     ) : ResponseEntity<User> {
+        logger.info("Requested user by player UUID: $playerUUID and server UUID: $serverUUID")
         val user = userService.getUserByPlayerUUIDAndServerUUID(playerUUID, serverUUID)
+
+        logger.info("User found: $user")
         return ResponseEntity.ok(user)
     }
-
-
 
     @Operation(
         summary = "Create a user",
@@ -86,7 +93,10 @@ class UserController(
         )
         @RequestBody userInDto: UserInDto
     ) : ResponseEntity<User> {
+        logger.info("Requested create user with data: $userInDto")
         val user = userService.createUser(userInDto)
+
+        logger.info("User created: $user")
         return ResponseEntity.ok(user)
     }
 
@@ -105,7 +115,10 @@ class UserController(
         @Parameter(description = "The id of the user to be retrieved", example = "1")
         @RequestParam id: Int
     ) : ResponseEntity<Unit> {
+        logger.info("Requested delete user by id: $id")
         userService.deleteUser(id)
+
+        logger.info("User deleted: $id")
         return ResponseEntity.noContent().build()
     }
 }

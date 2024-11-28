@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.RestController
 import wwt.api.dto.OfferInDto
 import wwt.api.entity.Offer
 import wwt.api.service.OfferService
+import wwt.api.utils.logger
 
 @RestController
 @RequestMapping("/wwtapi/offers")
 class OfferController(
     private val offerService: OfferService
 ) {
+
+    private val logger = logger()
 
     fun getOfferById() {
         // TODO
@@ -38,7 +41,10 @@ class OfferController(
         @Parameter(description = "The data of the offer to be created")
         @RequestBody offerInDto: OfferInDto
     ): ResponseEntity<Offer> {
+        logger.info("Requested create offer with data: $offerInDto")
         val createdOffer = offerService.createOffer(offerInDto)
+
+        logger.info("Offer created: $createdOffer")
         return ResponseEntity.ok(createdOffer)
     }
 }
