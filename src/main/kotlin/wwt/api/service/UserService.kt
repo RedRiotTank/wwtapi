@@ -53,4 +53,8 @@ class UserService(
 
         userRepository.deleteById(id)
     }
+
+    fun updateUser(user: User) {
+        userRepository.save(user)
+    }
 }

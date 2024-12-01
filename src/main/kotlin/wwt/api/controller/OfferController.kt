@@ -5,14 +5,13 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import wwt.api.dto.OfferConfirmInDto
 import wwt.api.dto.OfferInDto
 import wwt.api.entity.Offer
 import wwt.api.service.OfferService
 import wwt.api.utils.logger
+import java.util.UUID
 
 @RestController
 @RequestMapping("/wwtapi/offers")
@@ -22,8 +21,25 @@ class OfferController(
 
     private val logger = logger()
 
-    fun getOfferById() {
-        // TODO
+    @Operation(
+        summary = "Get paginated offers",
+        description = "Get a paginated list of offers"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Offers found"),
+            ApiResponse(responseCode = "400", description = "Bad request")
+        ]
+    )
+    @GetMapping("/getPaginatedOffers")
+    fun getPaginatedOffers(
+        @Parameter(description = "The page number to be retrieved", example = "0")
+        @RequestParam page: Int
+    ): ResponseEntity<List<Offer>> {
+        logger.info("Requested paginated offers")
+        offerService.getPaginatedOffers(page)
+
+        return ResponseEntity.ok(offerService.getPaginatedOffers(page))
     }
 
     @Operation(
@@ -46,5 +62,26 @@ class OfferController(
 
         logger.info("Offer created: $createdOffer")
         return ResponseEntity.ok(createdOffer)
+    }
+
+    @Operation(
+        summary = "Confirm an offer",
+        description = "Confirm an offer with the given data"
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(responseCode = "200", description = "Offer confirmed"),
+            ApiResponse(responseCode = "400", description = "Bad request")
+        ]
+    )
+    @PostMapping("/confirmOffer")
+    fun confirmOffer(
+        @Parameter(description = "The id of the offer to be confirmed", example = "1")
+        @RequestBody offerConfirmInDto: OfferConfirmInDto
+    ): ResponseEntity<Boolean> {
+        logger.info("Requested confirm offer with data: ${offerConfirmInDto.offerId}, ${offerConfirmInDto.userId}")
+        val result = offerService.confirmOffer(offerConfirmInDto.offerId, offerConfirmInDto.userId)
+
+        return ResponseEntity.ok(result)
     }
 }
