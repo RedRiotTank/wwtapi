@@ -5,7 +5,25 @@ World Wide Trade Api is a Rest Api that creates a link between multiple Minecraf
 This Api is to be accessed by a Minecraft server plugin that acts as user interface like [wwtshop](https://github.com/RedRiotTank/wwtshop/tree/master) or any other fork of the repository.
 
 ## Endpoints
-On build...
+All the endpoints starts with /wwtapi.
+
+Remember you can check all endpoints parameter and bodys with swagger.
+### Users
+- **/users/getUserById:** Obtain user by identification code.
+- **/users/getUserByPlayerUUIDAndServerUUID:** Obtain user by playerUUID and Server UUID (same user in two different servers is considered to be two different players in db).
+- **/users/createUser:** Create a new user.
+- **/users/deleteUser:** Delete an existing user.
+  
+### Items
+- **/items/getItemById:** Get an item bu it's identificaiton code.
+- **/items/createItem:** Create a new item (only if it doesn't exists already).
+- **/items/deleteItem:** Delete an existing item.
+
+### Offers
+- **/offers/getOfferById:** On build.
+- **/offers/createOffer:** Create a new offer (link between player and selling item). 
+- **/offers/deleteOffer:** On build.
+
 
 ## Database design
 ![wwtdb (2)](https://github.com/user-attachments/assets/801ef1ae-193f-4bf3-a46a-cacd0a397056)
