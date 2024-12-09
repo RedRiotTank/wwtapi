@@ -1,0 +1,12 @@
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /app/logs/*.log
+    json:
+      add_error_key: true
+      message_key: message
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  protocol: "http"
