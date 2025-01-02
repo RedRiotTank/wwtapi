@@ -1,72 +1,81 @@
+#  --- Docker Compose file version ---
 version: "3.8"
 
+# --- NETWORKS ---
 networks:
-  app_network:
-    driver: bridge
+  app_network:  # Comunicating network between containers
+    driver: bridge  
 
+# --- SERVICES ---
 services:
+  # Spring main application (API)
   app:
     build:
-      context: ./
-      dockerfile: Dockerfile
+      context: ./  
+      dockerfile: Dockerfile  # API dockerfile
     ports:
-      - "8080:8080"
-    depends_on:
-      - db
-      - elasticsearch
-      - kibana
+      - "8080:8080"  # springboot port mapping
+    depends_on:  #This container won't be initializated till the following ones are already up
+      - db  # Database.
+      - elasticsearch  # Logs database
+      - kibana  # Log visualizer
     networks:
-      - app_network
+      - app_network  # Connect to the default created network
     volumes:
-      - app-logs:/app/logs # Nuevo volumen para los logs
+      - app-logs:/app/logs  #Shared volume for log reading
     logging:
-      driver: "json-file"
+      driver: "json-file"  # json-file logging driver
       options:
-        max-size: "10m"
-        max-file: "3"
+        max-size: "10m"  # Logs maximum size 10mb
+        max-file: "3"  # maximum of 3 logs at once
 
+  # --- DATABASE ---
   db:
     build:
-      context: ./db/
-      dockerfile: Dockerfile
+      context: ./db/ 
+      dockerfile: Dockerfile  # Database dockerfile
     ports:
-      - "3306:3306"
+      - "3306:3306"  # mysql default port mapping
     networks:
-      - app_network
+      - app_network  # Connect to the default created network
 
+  # --- ELASTIC SEARCH ---
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1  # official Elasticsearch image with version 7.9.1
     environment:
-      - discovery.type=single-node
+      - discovery.type=single-node  # Elasticsearch as a single-node instance
     ports:
-      - "9200:9200"
+      - "9200:9200"  # Elasticsearch default port mapping.
     volumes:
-      - es-data:/usr/share/elasticsearch/data
+      - es-data:/usr/share/elasticsearch/data  # Mount the 'es-data' volume for Elasticsearch data
     networks:
-      - app_network
+      - app_network  # Connect to the default created network
 
+  # --- KIBANA ---
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.9.1
+    image: docker.elastic.co/kibana/kibana:7.9.1  # Official Kibana image with version 7.9.1
     ports:
-      - "5601:5601"
+      - "5601:5601"  # Kibana default port mapping.
     depends_on:
-      - elasticsearch
+      - elasticsearch  # Wait for Elasticsearch to be ready before starting Kibana
     networks:
-      - app_network
+      - app_network  # Connect to the default created network
 
+  # --- FILEBEAT ---
   filebeat:
     build:
-      context: ./logs/filebeat/
-      dockerfile: Dockerfile
+      context: ./logs/filebeat/  
+      dockerfile: Dockerfile  # Filebeat dockerfile
     volumes:
-      - app-logs:/app/logs:ro # Montaje de los logs de la aplicación
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - app-logs:/app/logs:ro  #  Read-only for Filebeat mounted volume 
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro  # Mounted Docker containers' log directory as read-only
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # Mount Docker socket for Filebeat to interact with Docker
     depends_on:
-      - elasticsearch
+      - elasticsearch  # Wait for Elasticsearch to be ready before starting Filebeat
     networks:
-      - app_network
+      - app_network  # Connect to the default created network
 
+# --- VOLUMNES ---
 volumes:
-  es-data:
-  app-logs:
+  es-data:  # Volume for storing Elasticsearch data
+  app-logs:  # Volume for storing application logs
