@@ -33,5 +33,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Create logs directory
+        run: mkdir -p /app/logs
+
       - name: Build with Maven
         run: mvn -B clean verify
