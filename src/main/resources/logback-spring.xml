@@ -16,8 +16,15 @@
         </encoder>
     </appender>
 
-    <root level="info">
-        <appender-ref ref="CONSOLE" />
-        <appender-ref ref="FILE" />
-    </root>
+    <springProfile name="ci">
+        <root level="off">
+        </root>
+    </springProfile>
+
+    <springProfile name="default">
+        <root level="info">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
 </configuration>
