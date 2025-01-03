@@ -1,4 +1,4 @@
-name: Build and Publish Docker Images
+name: Build, Publish, and Test Docker Images
 
 on:
   push:
@@ -8,6 +8,43 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      db:
+        image: ghcr.io/${{ github.repository }}:db
+        ports:
+          - 3306:3306
+        options: >-
+          --env MYSQL_ROOT_PASSWORD=root_password
+          --env MYSQL_DATABASE=wwtdb
+          --env MYSQL_USER=wwt
+          --env MYSQL_PASSWORD=wwt_password
+          --name test-db
+          
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+        ports:
+          - 9200:9200
+        options: >-
+          --env discovery.type=single-node
+          --name test-elasticsearch
+
+      app:
+        image: ghcr.io/${{ github.repository }}:app
+        ports:
+          - 8080:8080
+        options: >-
+          --name test-app
+        depends_on:
+          - db
+          - elasticsearch
+
+      filebeat:
+        image: ghcr.io/${{ github.repository }}:filebeat
+        options: >-
+          --name test-filebeat
+        depends_on:
+          - elasticsearch
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -19,7 +56,7 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build the Docker images
+    - name: Build Docker images
       run: |
         docker build -t ghcr.io/${{ github.repository }}:db ./db
         docker build -t ghcr.io/${{ github.repository }}:filebeat ./logs/filebeat
@@ -36,3 +73,15 @@ jobs:
         docker pull ghcr.io/${{ github.repository }}:db
         docker pull ghcr.io/${{ github.repository }}:filebeat
         docker pull ghcr.io/${{ github.repository }}:app
+
+    - name: Run and Test Containers
+      run: |    
+        docker-compose -f docker-compose.yml up -d  
+        sleep 60    
+        curl -f http://localhost:8080/
+        curl -f http://localhost:9200
+
+    - name: Stop Containers after Tests
+      run: |
+        docker-compose -f docker-compose.yml down
+
