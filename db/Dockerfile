@@ -1,4 +1,4 @@
-FROM mariadb:11.4.3
+FROM ghcr.io/redriottank/wwtapi:db
 
 ENV MYSQL_ROOT_PASSWORD=root_password
 ENV MYSQL_DATABASE=wwtdb

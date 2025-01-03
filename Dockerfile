@@ -1,4 +1,4 @@
-FROM tomcat:10.1-jdk21-openjdk-slim
+FROM ghcr.io/redriottank/wwtapi:app
 
 COPY target/api-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
 
