@@ -10,11 +10,9 @@ ENV PORT=3306
 # Copia el script SQL
 COPY init.sql /docker-entrypoint-initdb.d/
 
-# Copia el archivo de configuración personalizado
-COPY my.cnf /etc/mysql/my.cnf
-
 # Exponer el puerto predeterminado (opcional para documentación)
 EXPOSE 3306
 
 # Inicia MariaDB
-CMD ["mysqld"]
+CMD ["mysqld", "--port=$PORT"]
+
