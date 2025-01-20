@@ -5,13 +5,13 @@ ENV MYSQL_ROOT_PASSWORD=root_password
 ENV MYSQL_DATABASE=wwtdb
 ENV MYSQL_USER=wwt
 ENV MYSQL_PASSWORD=wwt_password
-ENV PORT=3306
+ENV PORT=8080
 
 # Copia el script SQL
 COPY init.sql /docker-entrypoint-initdb.d/
 
 # Exponer el puerto predeterminado (opcional para documentación)
-EXPOSE 3306
+EXPOSE 8080
 
 # Inicia MariaDB
 CMD ["mysqld", "--port=$PORT"]
