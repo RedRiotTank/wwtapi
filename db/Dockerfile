@@ -7,4 +7,6 @@ ENV MYSQL_PASSWORD=wwt_password
 
 COPY init.sql /docker-entrypoint-initdb.d/
 
+ENV PORT=3306
 EXPOSE 3306
+
