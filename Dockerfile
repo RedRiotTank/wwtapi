@@ -13,6 +13,8 @@ RUN mvn clean package -DskipTests
 # Fase final: utiliza la imagen base de Tomcat
 FROM ghcr.io/redriottank/wwtapi:app
 
+ENV DB_SRC=34.116.249.25
+
 # Copia el artefacto construido al contenedor final
 COPY --from=build-stage /app/target/api-0.0.1-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
 
